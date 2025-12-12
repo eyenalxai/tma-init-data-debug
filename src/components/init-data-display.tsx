@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "./ui/label"
 
 type InitDataDisplayProps = {
-	title: "Server" | "Client"
+	title: "Server" | "Client" | "Server (Parsed)" | "Server (Validated)"
 	initData: {
 		auth_date: Date | string
 		hash?: string

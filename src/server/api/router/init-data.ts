@@ -1,9 +1,28 @@
-import { createTRPCRouter, telegramInitDataProcedure } from "@/server/api/trpc"
+import {
+	createTRPCRouter,
+	telegramInitDataParsedProcedure,
+	telegramInitDataRawProcedure,
+	telegramInitDataValidatedProcedure
+} from "@/server/api/trpc"
 
 export const initDataRouter = createTRPCRouter({
-	getTelegramInitData: telegramInitDataProcedure.query(({ ctx }) => {
+	getTelegramInitDataRaw: telegramInitDataRawProcedure.query(({ ctx }) => {
 		return {
-			initData: ctx.telegramInitData
+			initData: ctx.telegramInitDataRaw
 		}
-	})
+	}),
+	getTelegramInitDataParsed: telegramInitDataParsedProcedure.query(
+		({ ctx }) => {
+			return {
+				initData: ctx.telegramInitDataParsed
+			}
+		}
+	),
+	getTelegramInitDataValidated: telegramInitDataValidatedProcedure.query(
+		({ ctx }) => {
+			return {
+				initData: ctx.telegramInitDataValidated
+			}
+		}
+	)
 })

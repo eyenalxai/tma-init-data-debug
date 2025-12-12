@@ -60,12 +60,73 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 
 export const publicProcedure = t.procedure.use(timingMiddleware)
 
-export const telegramInitDataMiddleware = t.middleware(
+export const telegramInitDataRawMiddleware = t.middleware(
 	async ({ ctx, next }) => {
 		if (!ctx.telegramInitDataString) {
 			throw new TRPCError({
 				code: "BAD_REQUEST",
-				message: "Missing Telegram init data in telegramInitDataMiddleware"
+				message: "Missing Telegram init data in telegramInitDataRawMiddleware"
+			})
+		}
+
+		return next({
+			ctx: {
+				...ctx,
+				telegramInitDataRaw: ctx.telegramInitDataString
+			}
+		})
+	}
+)
+
+export const telegramInitDataParsedMiddleware = t.middleware(
+	async ({ ctx, next }) => {
+		if (!ctx.telegramInitDataString) {
+			throw new TRPCError({
+				code: "BAD_REQUEST",
+				message:
+					"Missing Telegram init data in telegramInitDataParsedMiddleware"
+			})
+		}
+
+		const initDataString = ctx.telegramInitDataString
+
+		const initDataResult = Result.fromThrowable(
+			() => parse(initDataString),
+			(error) => {
+				console.error("[Auth] Error parsing init data", error)
+				return {
+					type: "bad_request",
+					message: `Error parsing init data: ${error instanceof Error ? error.message : "Unknown init data parsing error"}`
+				} as const
+			}
+		)()
+
+		return initDataResult.match(
+			async (initData) =>
+				next({
+					ctx: {
+						...ctx,
+						telegramInitDataParsed: initData
+					}
+				}),
+			(error) => {
+				console.error("[Auth] Error in telegramInitDataParsedMiddleware", error)
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: error.message
+				})
+			}
+		)
+	}
+)
+
+export const telegramInitDataValidatedMiddleware = t.middleware(
+	async ({ ctx, next }) => {
+		if (!ctx.telegramInitDataString) {
+			throw new TRPCError({
+				code: "BAD_REQUEST",
+				message:
+					"Missing Telegram init data in telegramInitDataValidatedMiddleware"
 			})
 		}
 
@@ -98,11 +159,14 @@ export const telegramInitDataMiddleware = t.middleware(
 				next({
 					ctx: {
 						...ctx,
-						telegramInitData: initData
+						telegramInitDataValidated: initData
 					}
 				}),
 			(error) => {
-				console.error("[Auth] Error in telegramInitDataMiddleware", error)
+				console.error(
+					"[Auth] Error in telegramInitDataValidatedMiddleware",
+					error
+				)
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: error.message
@@ -112,6 +176,16 @@ export const telegramInitDataMiddleware = t.middleware(
 	}
 )
 
-export const telegramInitDataProcedure = t.procedure
+export const telegramInitDataRawProcedure = t.procedure
 	.use(timingMiddleware)
-	.use(telegramInitDataMiddleware)
+	.use(telegramInitDataRawMiddleware)
+
+export const telegramInitDataParsedProcedure = t.procedure
+	.use(timingMiddleware)
+	.use(telegramInitDataParsedMiddleware)
+
+export const telegramInitDataValidatedProcedure = t.procedure
+	.use(timingMiddleware)
+	.use(telegramInitDataValidatedMiddleware)
+
+export const telegramInitDataProcedure = telegramInitDataValidatedProcedure

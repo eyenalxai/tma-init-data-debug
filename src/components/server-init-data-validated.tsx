@@ -6,12 +6,12 @@ import { api } from "@/components/providers/trpc-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
 
-export const ServerInitData = () => {
+export const ServerInitDataValidated = () => {
 	const {
 		data: telegramInitData,
 		isPending,
 		error
-	} = api.initData.getTelegramInitData.useQuery(undefined, {
+	} = api.initData.getTelegramInitDataValidated.useQuery(undefined, {
 		refetchInterval: 1000
 	})
 
@@ -30,5 +30,10 @@ export const ServerInitData = () => {
 			</Alert>
 		)
 
-	return <InitDataDisplay title="Server" initData={telegramInitData.initData} />
+	return (
+		<InitDataDisplay
+			title="Server (Validated)"
+			initData={telegramInitData.initData}
+		/>
+	)
 }
