@@ -1,6 +1,6 @@
 "use client"
 
-import { miniApp } from "@tma.js/sdk-react"
+import { miniApp, useSignal } from "@tma.js/sdk-react"
 import type { PropsWithChildren, ReactNode } from "react"
 import { useEffect } from "react"
 
@@ -23,6 +23,9 @@ const oklchToHex = (oklch: string): string => {
 export const TelegramColorProvider = ({
 	children
 }: PropsWithChildren): ReactNode => {
+	const isSetHeaderAvailable = useSignal(miniApp.setHeaderColor.isAvailable)
+	const isSetBgColorAvailable = useSignal(miniApp.setBgColor.isAvailable)
+
 	useEffect(() => {
 		const getColorFromCSS = (varName: string): string => {
 			const style = getComputedStyle(document.documentElement)
@@ -32,14 +35,14 @@ export const TelegramColorProvider = ({
 
 		const color = getColorFromCSS("--background")
 
-		if (miniApp.setHeaderColor.isAvailable()) {
+		if (isSetHeaderAvailable) {
 			miniApp.setHeaderColor(color)
 		}
 
-		if (miniApp.setBgColor.isAvailable()) {
+		if (isSetBgColorAvailable) {
 			miniApp.setBgColor(color)
 		}
-	}, [])
+	}, [isSetHeaderAvailable, isSetBgColorAvailable])
 
 	return children
 }
