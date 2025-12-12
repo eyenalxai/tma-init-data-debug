@@ -4,7 +4,6 @@ import { CircleAlertIcon } from "lucide-react"
 import { InitDataDisplay } from "@/components/init-data-display"
 import { api } from "@/components/providers/trpc-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
 
 export const ServerInitData = () => {
@@ -33,8 +32,7 @@ export const ServerInitData = () => {
 
 	return (
 		<div>
-			<Label className="text-lg font-semibold">Server</Label>
-			<InitDataDisplay initData={telegramInitData.initData} />
+			<InitDataDisplay title="Server" initData={telegramInitData.initData} />
 		</div>
 	)
 }
