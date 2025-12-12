@@ -1,6 +1,6 @@
 import { parse, validate } from "@tma.js/init-data-node"
 import { initTRPC, TRPCError } from "@trpc/server"
-import { ResultAsync } from "neverthrow"
+import { Result } from "neverthrow"
 import superjson from "superjson"
 import * as z from "zod"
 import { env } from "@/lib/env"
@@ -71,8 +71,8 @@ export const telegramInitDataMiddleware = t.middleware(
 
 		const initDataString = ctx.telegramInitDataString
 
-		const initDataResult = ResultAsync.fromPromise(
-			Promise.resolve(validate(initDataString, env.BOT_TOKEN)),
+		const initDataResult = Result.fromThrowable(
+			() => validate(initDataString, env.BOT_TOKEN),
 			(error) => {
 				console.error("[Auth] Error validating init data", error)
 				return {
@@ -80,9 +80,9 @@ export const telegramInitDataMiddleware = t.middleware(
 					message: `Error validating init data: ${error instanceof Error ? error.message : "Unknown init data validation error"}`
 				} as const
 			}
-		).andThen(() =>
-			ResultAsync.fromPromise(
-				Promise.resolve(parse(initDataString)),
+		)().andThen(() =>
+			Result.fromThrowable(
+				() => parse(initDataString),
 				(error) => {
 					console.error("[Auth] Error parsing init data", error)
 					return {
@@ -90,7 +90,7 @@ export const telegramInitDataMiddleware = t.middleware(
 						message: `Error parsing init data: ${error instanceof Error ? error.message : "Unknown init data parsing error"}`
 					} as const
 				}
-			)
+			)()
 		)
 
 		return initDataResult.match(
