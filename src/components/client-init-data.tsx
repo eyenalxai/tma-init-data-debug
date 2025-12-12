@@ -16,8 +16,17 @@ export const ClientInitData = () => {
 				<AlertDescription>Init data is empty</AlertDescription>
 			</Alert>
 		)
-
-	const parsedInitData = parseInitDataQuery(rawInitData)
-
-	return <InitDataDisplay title="Client" initData={parsedInitData} />
+	try {
+		const parsedInitData = parseInitDataQuery(rawInitData)
+		return <InitDataDisplay title="Client" initData={parsedInitData} />
+	} catch (error) {
+		console.error("Error parsing init data:", error)
+		return (
+			<Alert variant="error">
+				<CircleAlertIcon />
+				<AlertTitle>Heads up!</AlertTitle>
+				<AlertDescription>Error parsing init data</AlertDescription>
+			</Alert>
+		)
+	}
 }
