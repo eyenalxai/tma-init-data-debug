@@ -9,12 +9,8 @@ type InitDataDisplayProps = {
 		query_id?: string
 		signature?: string
 		user?: {
-			allows_write_to_pm?: boolean
 			first_name: string
-			id: number
 			last_name?: string
-			language_code?: string
-			photo_url?: string
 			username?: string
 		}
 	}
@@ -44,13 +40,6 @@ export const InitDataDisplay = ({ title, initData }: InitDataDisplayProps) => {
 					</div>
 
 					<div className="mt-2 space-y-1.5 text-sm">
-						{user && (
-							<div className="flex items-center justify-between gap-2">
-								<span className="text-muted-foreground shrink-0">User ID:</span>
-								<span className="font-mono text-xs truncate">{user.id}</span>
-							</div>
-						)}
-
 						{query_id !== undefined && query_id !== "" && (
 							<div className="flex items-center justify-between gap-2">
 								<span className="text-muted-foreground shrink-0">
@@ -91,28 +80,6 @@ export const InitDataDisplay = ({ title, initData }: InitDataDisplayProps) => {
 								})}
 							</span>
 						</div>
-
-						{user?.language_code !== undefined && user.language_code !== "" && (
-							<div className="flex items-center justify-between gap-2">
-								<span className="text-muted-foreground shrink-0">
-									Language:
-								</span>
-								<span className="text-xs truncate">
-									{user.language_code.toUpperCase()}
-								</span>
-							</div>
-						)}
-
-						{user && typeof user.allows_write_to_pm === "boolean" && (
-							<div className="flex items-center justify-between gap-2">
-								<span className="text-muted-foreground shrink-0">
-									Write to PM:
-								</span>
-								<span className="text-xs truncate">
-									{user.allows_write_to_pm ? "Allowed" : "Not Allowed"}
-								</span>
-							</div>
-						)}
 					</div>
 				</CardContent>
 			</Card>
