@@ -102,6 +102,7 @@ export const telegramInitDataMiddleware = t.middleware(
 					}
 				}),
 			(error) => {
+				console.error("[Auth] Error in telegramInitDataMiddleware", error)
 				throw new TRPCError({
 					code: "BAD_REQUEST",
 					message: error.message
