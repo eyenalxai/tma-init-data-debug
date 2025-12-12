@@ -73,12 +73,16 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 
 						try {
 							const initDataRaw = retrieveRawInitData()
+							console.log("[TRPCReactProvider] initDataRaw:", initDataRaw)
 							if (
 								initDataRaw !== null &&
 								initDataRaw !== undefined &&
 								initDataRaw !== ""
 							) {
+								console.log("[TRPCReactProvider] setting x-telegram-init-data")
 								headers.set("x-telegram-init-data", initDataRaw)
+							} else {
+								console.log("[TRPCReactProvider] initDataRaw is empty")
 							}
 						} catch (error) {
 							console.error("Could not retrieve Telegram init data:", error)
