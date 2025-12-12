@@ -4,6 +4,7 @@ import { CircleAlertIcon } from "lucide-react"
 import { InitDataDisplay } from "@/components/init-data-display"
 import { api } from "@/components/providers/trpc-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
 
 export default function Page() {
@@ -28,8 +29,15 @@ export default function Page() {
 		)
 
 	return (
-		<main>
-			<InitDataDisplay initData={telegramInitData} />
+		<main className="container mx-auto max-w-md mt-12 space-y-8">
+			<div>
+				<Label className="text-lg font-semibold">Server</Label>
+				<InitDataDisplay initData={telegramInitData.initData} />
+			</div>
+			<div>
+				<Label className="text-lg font-semibold">Server</Label>
+				<InitDataDisplay initData={telegramInitData.initData} />
+			</div>
 		</main>
 	)
 }

@@ -2,17 +2,17 @@ import { Card, CardContent } from "@/components/ui/card"
 
 type InitDataDisplayProps = {
 	initData: {
-		auth_date: string
+		auth_date: Date | string
 		hash?: string
-		query_id: string
+		query_id?: string
 		signature?: string
-		user: {
+		user?: {
 			allows_write_to_pm?: boolean
 			first_name: string
 			id: number
 			last_name?: string
 			language_code?: string
-			photo_url: string
+			photo_url?: string
 			username?: string
 		}
 	}
@@ -20,8 +20,10 @@ type InitDataDisplayProps = {
 
 export const InitDataDisplay = ({ initData }: InitDataDisplayProps) => {
 	const { user, auth_date, query_id, hash, signature } = initData
-	const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ")
-	const authDate = new Date(auth_date)
+	const fullName = user
+		? [user.first_name, user.last_name].filter(Boolean).join(" ")
+		: "Unknown User"
+	const authDate = auth_date instanceof Date ? auth_date : new Date(auth_date)
 
 	return (
 		<Card className="w-full max-w-md py-2">
@@ -30,7 +32,7 @@ export const InitDataDisplay = ({ initData }: InitDataDisplayProps) => {
 					<h3 className="font-semibold text-base leading-none truncate">
 						{fullName}
 					</h3>
-					{user.username && (
+					{user?.username !== undefined && user.username !== "" && (
 						<p className="text-xs text-muted-foreground truncate">
 							@{user.username}
 						</p>
@@ -38,24 +40,28 @@ export const InitDataDisplay = ({ initData }: InitDataDisplayProps) => {
 				</div>
 
 				<div className="mt-2 space-y-1.5 text-sm">
-					<div className="flex items-center justify-between gap-2">
-						<span className="text-muted-foreground shrink-0">User ID:</span>
-						<span className="font-mono text-xs truncate">{user.id}</span>
-					</div>
+					{user && (
+						<div className="flex items-center justify-between gap-2">
+							<span className="text-muted-foreground shrink-0">User ID:</span>
+							<span className="font-mono text-xs truncate">{user.id}</span>
+						</div>
+					)}
 
-					<div className="flex items-center justify-between gap-2">
-						<span className="text-muted-foreground shrink-0">Query ID:</span>
-						<span className="font-mono text-xs truncate">{query_id}</span>
-					</div>
+					{query_id !== undefined && query_id !== "" && (
+						<div className="flex items-center justify-between gap-2">
+							<span className="text-muted-foreground shrink-0">Query ID:</span>
+							<span className="font-mono text-xs truncate">{query_id}</span>
+						</div>
+					)}
 
-					{hash && (
+					{hash !== undefined && hash !== "" && (
 						<div className="flex items-center justify-between gap-2">
 							<span className="text-muted-foreground shrink-0">Hash:</span>
 							<span className="font-mono text-xs truncate">{hash}</span>
 						</div>
 					)}
 
-					{signature && (
+					{signature !== undefined && signature !== "" && (
 						<div className="flex items-center justify-between gap-2">
 							<span className="text-muted-foreground shrink-0">Signature:</span>
 							<span className="font-mono text-xs truncate">{signature}</span>
@@ -78,7 +84,7 @@ export const InitDataDisplay = ({ initData }: InitDataDisplayProps) => {
 						</span>
 					</div>
 
-					{user.language_code && (
+					{user?.language_code !== undefined && user.language_code !== "" && (
 						<div className="flex items-center justify-between gap-2">
 							<span className="text-muted-foreground shrink-0">Language:</span>
 							<span className="text-xs truncate">
@@ -87,7 +93,7 @@ export const InitDataDisplay = ({ initData }: InitDataDisplayProps) => {
 						</div>
 					)}
 
-					{typeof user.allows_write_to_pm === "boolean" && (
+					{user && typeof user.allows_write_to_pm === "boolean" && (
 						<div className="flex items-center justify-between gap-2">
 							<span className="text-muted-foreground shrink-0">
 								Write to PM:
