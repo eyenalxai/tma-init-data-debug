@@ -30,7 +30,7 @@ export const TelegramColorProvider = ({
 			return oklchToHex(oklchValue)
 		}
 
-		const color = getColorFromCSS("--background-secondary")
+		const color = getColorFromCSS("--background")
 
 		if (miniApp.setHeaderColor.isAvailable()) {
 			miniApp.setHeaderColor(color)
