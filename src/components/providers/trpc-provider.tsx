@@ -5,12 +5,16 @@ import {
 	QueryClient,
 	QueryClientProvider
 } from "@tanstack/react-query"
+import { retrieveRawInitData } from "@tma.js/sdk-react"
 import { httpBatchStreamLink, loggerLink } from "@trpc/client"
 import { createTRPCReact } from "@trpc/react-query"
-import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server"
+import {
+	type inferRouterInputs,
+	type inferRouterOutputs,
+	TRPCError
+} from "@trpc/server"
 import { useState } from "react"
 import { deserialize, serialize } from "superjson"
-
 import type { AppRouter } from "@/server/api/root"
 
 export const createQueryClient = () =>
@@ -66,6 +70,25 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 					headers: () => {
 						const headers = new Headers()
 						headers.set("x-trpc-source", "nextjs-react")
+
+						try {
+							const initDataRaw = retrieveRawInitData()
+							if (
+								initDataRaw !== null &&
+								initDataRaw !== undefined &&
+								initDataRaw !== ""
+							) {
+								headers.set("x-telegram-init-data", initDataRaw)
+							}
+						} catch (error) {
+							console.error("Could not retrieve Telegram init data:", error)
+
+							throw new TRPCError({
+								code: "INTERNAL_SERVER_ERROR",
+								message: "Could not retrieve Telegram init data"
+							})
+						}
+
 						return headers
 					}
 				})

@@ -1,8 +1,25 @@
-import { initTRPC } from "@trpc/server"
+import { parse, validate } from "@tma.js/init-data-node"
+import { initTRPC, TRPCError } from "@trpc/server"
+import { ResultAsync } from "neverthrow"
 import superjson from "superjson"
 import * as z from "zod"
+import { env } from "@/lib/env"
 
-export const createTRPCContext = (opts: { headers: Headers }) => opts
+export const createTRPCContext = (opts: { headers: Headers }) => {
+	const telegramInitDataString = opts.headers.get("x-telegram-init-data")
+
+	if (telegramInitDataString === null || telegramInitDataString === "") {
+		throw new TRPCError({
+			code: "BAD_REQUEST",
+			message: "Missing Telegram init data in createTRPCContext"
+		})
+	}
+
+	return {
+		...opts,
+		telegramInitDataString
+	}
+}
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
 	transformer: superjson,
@@ -42,3 +59,58 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 })
 
 export const publicProcedure = t.procedure.use(timingMiddleware)
+
+export const telegramInitDataMiddleware = t.middleware(
+	async ({ ctx, next }) => {
+		if (!ctx.telegramInitDataString) {
+			throw new TRPCError({
+				code: "BAD_REQUEST",
+				message: "Missing Telegram init data in telegramInitDataMiddleware"
+			})
+		}
+
+		const initDataString = ctx.telegramInitDataString
+
+		const initDataResult = ResultAsync.fromPromise(
+			Promise.resolve(validate(initDataString, env.BOT_TOKEN)),
+			(error) => {
+				console.error("[Auth] Error validating init data", error)
+				return {
+					type: "bad_request",
+					message: `Error validating init data: ${error instanceof Error ? error.message : "Unknown init data validation error"}`
+				} as const
+			}
+		).andThen(() =>
+			ResultAsync.fromPromise(
+				Promise.resolve(parse(initDataString)),
+				(error) => {
+					console.error("[Auth] Error parsing init data", error)
+					return {
+						type: "bad_request",
+						message: `Error parsing init data: ${error instanceof Error ? error.message : "Unknown init data parsing error"}`
+					} as const
+				}
+			)
+		)
+
+		return initDataResult.match(
+			async (initData) =>
+				next({
+					ctx: {
+						...ctx,
+						telegramInitData: initData
+					}
+				}),
+			(error) => {
+				throw new TRPCError({
+					code: "BAD_REQUEST",
+					message: error.message
+				})
+			}
+		)
+	}
+)
+
+export const telegramInitDataProcedure = t.procedure
+	.use(timingMiddleware)
+	.use(telegramInitDataMiddleware)

@@ -1,9 +1,9 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc"
+import { createTRPCRouter, telegramInitDataProcedure } from "@/server/api/trpc"
 
 export const stuffRouter = createTRPCRouter({
-	getPublicStuff: publicProcedure.query(() => {
+	getTelegramInitData: telegramInitDataProcedure.query(({ ctx }) => {
 		return {
-			message: "Hello, world!"
+			initData: ctx.telegramInitData
 		}
 	})
 })
