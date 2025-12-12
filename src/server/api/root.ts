@@ -1,8 +1,8 @@
-import { stuffRouter } from "@/server/api/router/stuff"
+import { initDataRouter } from "@/server/api/router/init-data"
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc"
 
 export const appRouter = createTRPCRouter({
-	stuff: stuffRouter
+	initData: initDataRouter
 })
 
 export type AppRouter = typeof appRouter

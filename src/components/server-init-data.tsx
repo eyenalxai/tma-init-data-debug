@@ -11,7 +11,7 @@ export const ServerInitData = () => {
 		data: telegramInitData,
 		isPending,
 		error
-	} = api.stuff.getTelegramInitData.useQuery(undefined, {
+	} = api.initData.getTelegramInitData.useQuery(undefined, {
 		refetchInterval: 1000
 	})
 
