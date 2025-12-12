@@ -1,6 +1,7 @@
 "use client"
 
 import { CircleAlertIcon } from "lucide-react"
+import { InitDataDisplay } from "@/components/init-data-display"
 import { api } from "@/components/providers/trpc-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
@@ -28,7 +29,7 @@ export default function Page() {
 
 	return (
 		<main>
-			<h1>{JSON.stringify(telegramInitData)}</h1>
+			<InitDataDisplay initData={telegramInitData} />
 		</main>
 	)
 }
