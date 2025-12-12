@@ -30,9 +30,5 @@ export const ServerInitData = () => {
 			</Alert>
 		)
 
-	return (
-		<div>
-			<InitDataDisplay title="Server" initData={telegramInitData.initData} />
-		</div>
-	)
+	return <InitDataDisplay title="Server" initData={telegramInitData.initData} />
 }
